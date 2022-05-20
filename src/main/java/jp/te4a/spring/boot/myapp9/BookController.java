@@ -42,7 +42,7 @@ public class BookController {
       return "redirect:/books";
     }
     @PostMapping(path = "delete")
-    String delete(@RequestParam Integer id) {
+    String delete(@RequestParam BookBean id) {
       bookService.delete(id);
       return "redirect:/books";
     }
