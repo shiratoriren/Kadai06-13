@@ -8,7 +8,7 @@
 
 <body>
     <form th:action="@{/users/create}" th:object="${userForm}" method="post">
-      <table>
+      <table class="table table-striped table-bordered table-condensed">
         <tr><td>ユーザID:</td><td>
         <input type="text" name="username" th:field="*{username}" th:errorclass="error-input" />
         <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error-messages">error!</span>
