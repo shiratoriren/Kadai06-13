@@ -4,9 +4,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import jp.te4a.spring.boot.myapp13.validate.Writter;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import validation.Writter;
 
 @Data
 @NoArgsConstructor

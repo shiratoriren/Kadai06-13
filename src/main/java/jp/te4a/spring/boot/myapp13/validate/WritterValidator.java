@@ -1,4 +1,4 @@
-package validation;
+package jp.te4a.spring.boot.myapp13.validate;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

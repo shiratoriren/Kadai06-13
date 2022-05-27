@@ -1,4 +1,4 @@
-package validation;
+package jp.te4a.spring.boot.myapp13.validate;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
