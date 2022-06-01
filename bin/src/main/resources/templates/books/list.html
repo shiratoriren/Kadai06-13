@@ -7,7 +7,12 @@
         <title>書籍登録一覧画面</title>
     </head>
     <body>
-		<table class="table table-striped talbe-bordered table-condensed">
+	    <p>
+            <span sec:authentication="principal.user.username">duke</span>さんログイン中。
+        </p>
+        <form th:action="@{/logout}" method="post"><input type="submit" class="btn btn-default btn-xs" value="ログアウト" /></form>
+    
+		<table class="table table-striped table-bordered table-condensed">
             <tr th:each="book : ${books}">
                 <td th:text="${book.id}">100</td>
                 <td th:text="${book.title}">タイトルＡ</td>
@@ -17,7 +22,7 @@
             </tr>
 		</table>
         <form th:action="@{/books/create}" th:object="${bookForm}" method="post">
-            <table>
+            <table class="table table-striped table-bordered table-condensed">
                 <tr><td>タイトル:</td><td><input type="text" name="title" th:field="*{title}" th:errorclass="error-input" />
 		        <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-messages">error!</span>
 		        </td></tr>
@@ -37,7 +42,7 @@
 	        <input type="submit" value="作成" />
 		</form>
         <hr />
-        <table>
+        <table class="table table-striped table-bordered table-condensed">
 	      <tr th:each="book : ${books}">
 	        <td th:text="${book.id}">100</td>
 	        <td th:text="${book.title}">タイトルＡ</td>

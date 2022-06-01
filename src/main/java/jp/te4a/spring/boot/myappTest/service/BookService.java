@@ -1,4 +1,4 @@
-package jp.te4a.spring.boot.myapp13.service;
+package jp.te4a.spring.boot.myappTest.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +8,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jp.te4a.spring.boot.myapp13.bean.BookBean;
-import jp.te4a.spring.boot.myapp13.form.BookForm;
-import jp.te4a.spring.boot.myapp13.repository.BookRepository;
+import jp.te4a.spring.boot.myappTest.bean.BookBean;
+import jp.te4a.spring.boot.myappTest.form.BookForm;
+import jp.te4a.spring.boot.myappTest.repository.BookRepository;
 
 
 @Service

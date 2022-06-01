@@ -1,4 +1,4 @@
-package jp.te4a.spring.boot.myapp13.controller;
+package jp.te4a.spring.boot.myappTest.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
