@@ -2,12 +2,14 @@ package jp.te4a.spring.boot.myappTest.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.List;
 
 import javax.activation.DataSource;
+import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -34,25 +38,48 @@ import com.ninja_squad.dbsetup.operation.Operation;
 import jp.te4a.spring.boot.myappTest.BookApplication;
 import jp.te4a.spring.boot.myappTest.form.BookForm;
 
+
+
 //SpringBootの起動クラスを指定
 @ContextConfiguration(classes = BookApplication.class)
+
 //クラス内の全メソッドにおいて、実行前にDIコンテナの中身を破棄する
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+
 //テストランナー：各テストケース（テストメソッド）を制御する：DIする場合は必須？
 @ExtendWith(SpringExtension.class)
+
 //MockおよびWebApplicationContextの自動ロード：サーブレット環境を自動作成する
 @AutoConfigureMockMvc
+
+@ExtendWith(SpringExtension.class)
+
+@Transactional
+
 //テスト時に起動するSprinbBootプロジェクトの使用ポート番号を設定する場合：ランダム
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+
 //クラス単位でインスタンス生成（通常はメソッド単位）：@BeforeAllを使うため
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+
+@WithUserDetails(value="testuser", userDetailsServiceBeanName="loginUserDetailsService")
+
 public class BookControllerTest {
+	
+	public static final Operation INSERT_BOOK_DATA1 = Operations.insertInto("books")
+			  .columns("id", "title", "writter", "publisher", "price").values(1, "タイトル１", "著者１", "出版社１", 100).build();
+	public static final Operation INSERT_BOOK_DATA2 = Operations.insertInto("books")
+			  .columns("id", "title", "writter", "publisher", "price").values(2, "タイトル２", "著者２", "出版社２", 200).build();
+	
 	@Autowired
     private javax.sql.DataSource dataSource;
+	
 	@Autowired
 	MockMvc mockMvc;  // SpringMVCモックオブジェクト
+	
 	@Autowired
 	WebApplicationContext wac;  // Webアプリへの設定提供
+	
 	@BeforeAll
 	public void テスト前処理() {
 	    // Thymeleafを使用していることがテスト時に認識されない様子
@@ -63,20 +90,7 @@ public class BookControllerTest {
 	  mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}
 	
-public static final Operation INSERT_BOOK_DATA1 = Operations.insertInto("books")
-	  .columns("id", "title", "writter", "publisher", "price").values(1, "タイトル１", "著者１", "出版社１", 100).build();
-public static final Operation INSERT_BOOK_DATA2 = Operations.insertInto("books")
-	  .columns("id", "title", "writter", "publisher", "price").values(2, "タイトル２", "著者２", "出版社２", 200).build();
-public static final Operation INSERT_BOOK_DATA3 = Operations.insertInto("books")
-	  .columns("id", "title", "writter", "publisher", "price").values(3, "タイトル３", "著者３", "出版社３", 300).build();
 
-	@Test
-	public void 書籍追加一覧ページ表示 () throws Exception {
-		MvcResult result = mockMvc.perform(  get("/books")  )
-		.andExpect(  status().is2xxSuccessful()  )
-		.andExpect(  view().name("books/list")  )
-		.andReturn();
-   }
 	/**
 	 * * 書籍追加一覧ページ表示_クラスあり.
 	 * * @throws Exception MockMVC失敗時例外
@@ -85,30 +99,27 @@ public static final Operation INSERT_BOOK_DATA3 = Operations.insertInto("books")
 	@Test
 	public void 書籍追加一覧ページ表示_書籍あり() throws Exception {
 		// DB状態
-		// 書籍：３冊
 		Destination dest = new DataSourceDestination(dataSource);
-		Operation ops = Operations.sequenceOf(INSERT_BOOK_DATA1,
-				INSERT_BOOK_DATA2, INSERT_BOOK_DATA3);
+		Operation ops = Operations.sequenceOf(INSERT_BOOK_DATA1,INSERT_BOOK_DATA2);
 		DbSetup dbSetup = new DbSetup(dest, ops);
 		dbSetup.launch();
+		
+		
 		BookForm form1 = new BookForm();
         form1.setId(1);
         form1.setTitle("タイトル１");
         form1.setWritter("著者１");
         form1.setPublisher("出版社１");
         form1.setPrice(100);
+        
         BookForm form2 = new BookForm();
         form2.setId(2);
         form2.setTitle("タイトル２");
         form2.setWritter("著者２");
         form2.setPublisher("出版社２");
         form2.setPrice(200);
-        BookForm form3 = new BookForm();
-        form3.setId(3);
-        form3.setTitle("タイトル３");
-        form3.setWritter("著者３");
-        form3.setPublisher("出版社３");
-        form3.setPrice(300);
+        
+        
         MvcResult result = mockMvc.perform(get("/books"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("books/list"))
@@ -122,6 +133,22 @@ public static final Operation INSERT_BOOK_DATA3 = Operations.insertInto("books")
         } catch (NullPointerException e) {
             throw new Exception(e);
         }
+    }
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void 書籍追加入力ページ() throws Exception {
+		BookForm bookForm = new BookForm();
+		
+        MvcResult result = mockMvc.perform(post("/books/create")
+			.param("title", "タイトル")
+			.flashAttr("form", bookForm)
+			.sessionAttr("form", bookForm)
+			.with(SecurityMockMvcRequestPostProcessors.csrf()))
+
+			.andExpect(status().is2xxSuccessful())
+			.andExpect(view().name("books/list"))
+			.andReturn();
     }
 }
 
